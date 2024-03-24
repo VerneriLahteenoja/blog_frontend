@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import loginService from '../services/login'
 
-const Login = ({ setLogged }) => {
+const LoginForm = ({ setUser }) => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
-	const [user, setUser] = useState(null)
 
 	const handleUsername = (event) => {
 		setUsername(event.target.value)
@@ -19,7 +18,6 @@ const Login = ({ setLogged }) => {
 				username, password
 			})
 			setUser(user)
-			setLogged(true)
 		} catch (exception) {
 			console.log(exception)
 			console.log('Login failed')
@@ -27,7 +25,6 @@ const Login = ({ setLogged }) => {
 		setUsername('')
 		setPassword('')
 	}
-
   return (
     <div>		
       <h2>Login</h2>
@@ -56,4 +53,4 @@ const Login = ({ setLogged }) => {
   )
 }
 
-export default Login
+export default LoginForm
