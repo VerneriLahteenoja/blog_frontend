@@ -1,16 +1,11 @@
 import { useState } from 'react'
 import loginService from '../services/login'
+import blogService from '../services/blogs'
 
-const LoginForm = ({ setUser }) => {
+const LoginForm = ({ setUser, setMessage, setSuccess }) => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 
-	const handleUsername = (event) => {
-		setUsername(event.target.value)
-	}
-	const handlePassword = (event) => {
-		setPassword(event.target.value)
-	}
 	const handleSubmit = async (event) => {
 		event.preventDefault()
 		try {
@@ -18,10 +13,19 @@ const LoginForm = ({ setUser }) => {
 				username, password
 			})
 			setUser(user)
+			window.localStorage.setItem(
+				'loggedInUser', JSON.stringify(user)
+			)
+			blogService.setToken(user.token)
 		} catch (exception) {
 			console.log(exception)
-			console.log('Login failed')
+			setMessage('Wrong username or password')
+			setSuccess(false)
 		}
+		setTimeout(() => {
+			setMessage(null)
+			setSuccess(null)
+		}, 5000)
 		setUsername('')
 		setPassword('')
 	}
@@ -35,7 +39,7 @@ const LoginForm = ({ setUser }) => {
 						type="text" 
 						value={username} 
 						name="Username"
-						onChange={handleUsername} />
+						onChange={({ target }) => setUsername(target.value)} />
 				</div>
 				<div>
 					password
@@ -43,7 +47,7 @@ const LoginForm = ({ setUser }) => {
 						type="text" 
 						value={password} 
 						name="Password"
-						onChange={handlePassword} />
+						onChange={({ target }) => setPassword(target.value)} />
 				</div>
 				<div>
 					<button type="submit">login</button>
