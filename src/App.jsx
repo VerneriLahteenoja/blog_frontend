@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import Notification from './components/Notifications'
+import Togglable from './components/Togglable'
 
 
 const App = () => {
@@ -13,9 +14,11 @@ const App = () => {
   const [success, setSuccess] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+    const getBlogs = async () => {
+      const response = await blogService.getAll()
+      setBlogs(response)
+    }
+    getBlogs()
   }, [])
 
   useEffect(() => {
@@ -25,40 +28,53 @@ const App = () => {
     }
   }, [])
 
+  const blogFormRef = useRef()
+
   const handleLogout = () => {
     setUser(null)
     window.localStorage.removeItem('loggedInUser')
   }
 
+  const addBlog = async (blogObject) => {
+    blogFormRef.current.toggleVisibility()
+    const response = await blogService.create(blogObject)
+    setBlogs(blogs.concat(response))
+  }
+
   return (
     <div>
+      <h1>Blogs</h1>
       {message && <Notification 
         message={message} 
         success={success}
       />}
-      {!user && <LoginForm 
-        setUser={setUser} 
-        setMessage={setMessage} 
-        setSuccess={setSuccess}
-      />}
+      {!user &&
+      <Togglable buttonLabel="Log in">
+        <LoginForm 
+          setUser={setUser} 
+          setMessage={setMessage} 
+          setSuccess={setSuccess}
+        />
+      </Togglable>}
       {user && <div>
-          <h2>blogs</h2>
-          <p>{user.name} logged in
+        <p>{user.name} logged in
             <button 
               type="button"
               onClick={handleLogout}
               >logout
             </button>
           </p>
+        <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
           <BlogForm 
-            user={user} 
-            setMessage={setMessage} 
-            setSuccess={setSuccess}
+              addBlog={addBlog}
+              setMessage={setMessage} 
+              setSuccess={setSuccess}
           />
+        </Togglable>
           {blogs.map(blog =>
             <Blog key={blog.id} blog={blog} />
           )}
-        </div>
+      </div>
       }
     </div>
   )
