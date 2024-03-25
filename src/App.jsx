@@ -41,6 +41,16 @@ const App = () => {
     setBlogs(blogs.concat(response))
   }
 
+  const updateBlog = async (id, blogObject) => {
+    console.log(blogs)
+    const response = await blogService.update(id, blogObject)
+    const blogCopy = [...blogs]
+    const updatedBlogs = blogCopy.map(blog => 
+      blog.id === response.id ? response : blog)
+    console.log(updatedBlogs)
+    setBlogs(updatedBlogs)
+  }
+
   return (
     <div>
       <h1>Blogs</h1>
@@ -72,7 +82,11 @@ const App = () => {
           />
         </Togglable>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog 
+              key={blog.id}
+              blog={blog}
+              updateBlog={updateBlog}
+            />
           )}
       </div>
       }
