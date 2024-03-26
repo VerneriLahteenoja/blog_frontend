@@ -36,11 +36,10 @@ const App = () => {
     setUser(null)
     window.localStorage.removeItem('loggedInUser')
   }
-  // Does not refresh after delete
+
   const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility()
     const response = await blogService.create(blogObject)
-    console.log(response)
     setBlogs(blogs.concat(response))
     setTimeout(() => {
 			setMessage(null)
@@ -93,10 +92,11 @@ const App = () => {
               setSuccess={setSuccess}
           />
         </Togglable>
-          {blogs.map(blog =>
+          {blogs.sort((a, b) => a.likes - b.likes).map(blog =>
             <Blog 
               key={blog.id}
               blog={blog}
+              username={user.username}
               updateBlog={updateBlog}
               deleteBlog={deleteBlog}
             />
