@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, username, updateBlog, deleteBlog }) => {
   const [visible, setVisible] = useState(false)
@@ -35,29 +36,36 @@ const Blog = ({ blog, username, updateBlog, deleteBlog }) => {
   }
 
   return (
-  <div style={blogStyle}>
-    <div>
-      {blog.title} {blog.author}
-      {' '}
-      <button type="button" onClick={() => setVisible(!visible)}>{visible ? 'Hide' : 'View'}</button>
-    </div>
-    {visible && <div>
-      {blog.url}
+    <div style={blogStyle}>
       <div>
-        likes {blog.likes} {' '}
-        <button type="button" onClick={handleLike}>like</button>
+        {blog.title} {blog.author}
+        {' '}
+        <button type="button" onClick={() => setVisible(!visible)}>{visible ? 'Hide' : 'View'}</button>
       </div>
-      <div>{blog.user.name}</div>
-      
-      {username === blog.user.username && 
-        <button 
-          type="button" 
+      {visible && <div>
+        {blog.url}
+        <div>
+        likes {blog.likes} {' '}
+          <button type="button" onClick={handleLike}>like</button>
+        </div>
+        <div>{blog.user.name}</div>
+
+        {username === blog.user.username &&
+        <button
+          type="button"
           onClick={handleDelete}>
           remove
         </button>}
+      </div>
+      }
     </div>
-    }
-  </div>
-)}
+  )}
+
+Blog.propTypes = {
+  blog: PropTypes.object,
+  username: PropTypes.string.isRequired,
+  updateBlog: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func.isRequired
+}
 
 export default Blog

@@ -23,7 +23,7 @@ const App = () => {
 
   useEffect(() => {
     const logged = window.localStorage.getItem('loggedInUser')
-    const user = JSON.parse(logged) 
+    const user = JSON.parse(logged)
     if (logged) {
       setUser(user)
       blogService.setToken(user.token)
@@ -42,15 +42,15 @@ const App = () => {
     const response = await blogService.create(blogObject)
     setBlogs(blogs.concat(response))
     setTimeout(() => {
-			setMessage(null)
-			setSuccess(null)
-		}, 5000)
+      setMessage(null)
+      setSuccess(null)
+    }, 5000)
   }
 
   const updateBlog = async (id, blogObject) => {
     const response = await blogService.update(id, blogObject)
     const blogCopy = [...blogs]
-    const updatedBlogs = blogCopy.map(blog => 
+    const updatedBlogs = blogCopy.map(blog =>
       blog.id === response.id ? response : blog)
     setBlogs(updatedBlogs)
   }
@@ -65,42 +65,42 @@ const App = () => {
   return (
     <div>
       <h1>Blogs</h1>
-      {message && <Notification 
-        message={message} 
+      {message && <Notification
+        message={message}
         success={success}
       />}
       {!user &&
       <Togglable buttonLabel="Log in">
-        <LoginForm 
-          setUser={setUser} 
-          setMessage={setMessage} 
+        <LoginForm
+          setUser={setUser}
+          setMessage={setMessage}
           setSuccess={setSuccess}
         />
       </Togglable>}
       {user && <div>
         <p>{user.name} logged in
-            <button 
-              type="button"
-              onClick={handleLogout}
-              >logout
-            </button>
-          </p>
+          <button
+            type="button"
+            onClick={handleLogout}
+          >logout
+          </button>
+        </p>
         <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
-          <BlogForm 
-              addBlog={addBlog}
-              setMessage={setMessage} 
-              setSuccess={setSuccess}
+          <BlogForm
+            addBlog={addBlog}
+            setMessage={setMessage}
+            setSuccess={setSuccess}
           />
         </Togglable>
-          {blogs.sort((a, b) => a.likes - b.likes).map(blog =>
-            <Blog 
-              key={blog.id}
-              blog={blog}
-              username={user.username}
-              updateBlog={updateBlog}
-              deleteBlog={deleteBlog}
-            />
-          )}
+        {blogs.sort((a, b) => a.likes - b.likes).map(blog =>
+          <Blog
+            key={blog.id}
+            blog={blog}
+            username={user.username}
+            updateBlog={updateBlog}
+            deleteBlog={deleteBlog}
+          />
+        )}
       </div>
       }
     </div>
