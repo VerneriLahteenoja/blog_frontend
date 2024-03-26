@@ -23,10 +23,12 @@ const App = () => {
 
   useEffect(() => {
     const logged = window.localStorage.getItem('loggedInUser')
+    const user = JSON.parse(logged) 
     if (logged) {
-      setUser(JSON.parse(logged))
+      setUser(user)
+      blogService.setToken(user.token)
     }
-  }, [])
+  }, [blogs])
 
   const blogFormRef = useRef()
 
@@ -34,21 +36,31 @@ const App = () => {
     setUser(null)
     window.localStorage.removeItem('loggedInUser')
   }
-
+  // Does not refresh after delete
   const addBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility()
     const response = await blogService.create(blogObject)
+    console.log(response)
     setBlogs(blogs.concat(response))
+    setTimeout(() => {
+			setMessage(null)
+			setSuccess(null)
+		}, 5000)
   }
 
   const updateBlog = async (id, blogObject) => {
-    console.log(blogs)
     const response = await blogService.update(id, blogObject)
     const blogCopy = [...blogs]
     const updatedBlogs = blogCopy.map(blog => 
       blog.id === response.id ? response : blog)
-    console.log(updatedBlogs)
     setBlogs(updatedBlogs)
+  }
+
+  const deleteBlog = async (id) => {
+    await blogService.deleteOne(id)
+    const blogCopy = [...blogs]
+    const newBlogs = blogCopy.filter(blog => blog.id !== id)
+    setBlogs(newBlogs)
   }
 
   return (
@@ -86,6 +98,7 @@ const App = () => {
               key={blog.id}
               blog={blog}
               updateBlog={updateBlog}
+              deleteBlog={deleteBlog}
             />
           )}
       </div>

@@ -6,10 +6,10 @@ const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
 	const [author, setAuthor] = useState('')
 	const [url, setUrl] = useState('')
 
-	const handleSubmit = (event) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault()
 		try {
-			addBlog({
+			await addBlog({
 				title: title,
 				author: author,
 				url: url
@@ -21,10 +21,6 @@ const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
 			setMessage(`Error! Adding blog failed`)
 			setSuccess(false)
 		}
-		setTimeout(() => {
-			setMessage(null)
-			setSuccess(null)
-		}, 5000)
 		setTitle('')
 		setAuthor('')
 		setUrl('')
