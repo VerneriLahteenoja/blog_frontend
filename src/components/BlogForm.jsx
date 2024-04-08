@@ -33,6 +33,7 @@ const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
         <div>
           <label htmlFor="Title">title:</label>
           <input
+            data-testid='title'
             id="Title"
             type="text"
             value={title}
@@ -43,6 +44,7 @@ const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
         <div>
           <label htmlFor="Author">author:</label>
           <input
+            data-testid='author'
             id="Author"
             type="text"
             value={author}
@@ -53,6 +55,7 @@ const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
         <div>
           <label htmlFor="Url">url:</label>
           <input
+            data-testid='url'
             id="Url"
             type="text"
             value={url}
