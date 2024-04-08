@@ -44,7 +44,7 @@ const Blog = ({ blog, username, updateBlog, deleteBlog }) => {
       </div>
       {visible && <div>
         {blog.url}
-        <div>
+        <div data-testid="likes">
         likes {blog.likes} {' '}
           <button type="button" onClick={handleLike}>like</button>
         </div>
