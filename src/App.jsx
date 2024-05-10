@@ -1,21 +1,23 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import Togglable from './components/Togglable'
+import { useQuery } from '@tanstack/react-query'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
 
-  useEffect(() => {
-    const getBlogs = async () => {
-      const response = await blogService.getAll()
-      setBlogs(response)
-    }
-    getBlogs()
-  }, [])
+  const blogFormRef = useRef()
+
+  const result = useQuery({
+    queryKey: ['blogs'],
+    queryFn: blogService.getAll,
+    retry: 1,
+  })
+
+  const blogs = result.data
 
   useEffect(() => {
     const logged = window.localStorage.getItem('loggedInUser')
@@ -26,33 +28,16 @@ const App = () => {
     }
   }, [blogs])
 
-  const blogFormRef = useRef()
-
   const handleLogout = () => {
     setUser(null)
     window.localStorage.removeItem('loggedInUser')
   }
 
-  const addBlog = async (blogObject) => {
-    blogFormRef.current.toggleVisibility()
-    const response = await blogService.create(blogObject)
-    setBlogs(blogs.concat(response))
-  }
-
-  const updateBlog = async (id, blogObject) => {
-    const response = await blogService.update(id, blogObject)
-    const blogCopy = [...blogs]
-    const updatedBlogs = blogCopy.map((blog) =>
-      blog.id === response.id ? response : blog
-    )
-    setBlogs(updatedBlogs)
-  }
-
-  const deleteBlog = async (id) => {
-    await blogService.deleteOne(id)
-    const blogCopy = [...blogs]
-    const newBlogs = blogCopy.filter((blog) => blog.id !== id)
-    setBlogs(newBlogs)
+  // This needs to be after hooks following rules of hooks
+  if (result.isLoading) {
+    return <div>loading resources...</div>
+  } else if (result.isError) {
+    return <div>service not available due to problems in server</div>
   }
 
   return (
@@ -72,18 +57,12 @@ const App = () => {
             </button>
           </p>
           <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
-            <BlogForm addBlog={addBlog} />
+            <BlogForm blogFormRef={blogFormRef} />
           </Togglable>
           {blogs
             .sort((a, b) => a.likes - b.likes)
             .map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                username={user.username}
-                updateBlog={updateBlog}
-                deleteBlog={deleteBlog}
-              />
+              <Blog key={blog.id} blog={blog} username={user.username} />
             ))}
         </div>
       )}

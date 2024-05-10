@@ -1,10 +1,12 @@
 import { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import NotificationContext from './Notifications'
+import blogService from '../services/blogs'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-const Blog = ({ blog, username, updateBlog, deleteBlog }) => {
+const Blog = ({ blog, username }) => {
   const [visible, setVisible] = useState(false)
-  const [message, messageDispatch] = useContext(NotificationContext)
+  const [message, dispatch] = useContext(NotificationContext)
 
   const blogStyle = {
     paddingTop: 10,
@@ -14,29 +16,54 @@ const Blog = ({ blog, username, updateBlog, deleteBlog }) => {
     marginBottom: 5,
   }
 
-  const handleLike = async () => {
-    try {
-      await updateBlog(blog.id, {
-        title: blog.title,
-        author: blog.author,
-        likes: blog.likes + 1,
-        url: blog.url,
-        user: blog.user.id,
+  const queryClient = useQueryClient()
+
+  const updateBlogMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      dispatch({ type: 'SUCCESS', payload: 'Voted!' })
+      setTimeout(() => {
+        dispatch({})
+      }, 5000)
+    },
+    onError: () => {
+      dispatch({ type: 'ERROR', payload: 'ERROR: Voting failed' })
+      setTimeout(() => {
+        dispatch({})
+      }, 5000)
+    },
+  })
+
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.deleteOne,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      dispatch({ type: 'SUCCESS', payload: 'Blog deleted' })
+      setTimeout(() => {
+        dispatch({})
+      }, 5000)
+    },
+    onError: () => {
+      dispatch({
+        type: 'ERROR',
+        payload: 'ERROR: Only blog creator can delete this blog',
       })
-    } catch (exception) {
-      console.log(exception)
-    }
+      setTimeout(() => {
+        dispatch({})
+      }, 5000)
+    },
+  })
+
+  const handleLike = async () => {
+    updateBlogMutation.mutate({ ...blog, likes: blog.likes + 1 })
   }
 
   const handleDelete = async () => {
     if (
       window.confirm(`Do you want to remove ${blog.title} by ${blog.author}?`)
     ) {
-      await deleteBlog(blog.id)
-      messageDispatch({ type: 'SUCCESS', payload: 'blog deleted successfully' })
-      setTimeout(() => {
-        messageDispatch({})
-      }, 5000)
+      deleteBlogMutation.mutate(blog.id)
     }
   }
 
@@ -73,8 +100,6 @@ const Blog = ({ blog, username, updateBlog, deleteBlog }) => {
 Blog.propTypes = {
   blog: PropTypes.object,
   username: PropTypes.string.isRequired,
-  updateBlog: PropTypes.func.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
 }
 
 export default Blog
