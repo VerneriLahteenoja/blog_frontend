@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
+import NotificationContext from './Notifications'
 
 const Blog = ({ blog, username, updateBlog, deleteBlog }) => {
   const [visible, setVisible] = useState(false)
+  const [message, messageDispatch] = useContext(NotificationContext)
 
   const blogStyle = {
     paddingTop: 10,
@@ -31,6 +33,10 @@ const Blog = ({ blog, username, updateBlog, deleteBlog }) => {
       window.confirm(`Do you want to remove ${blog.title} by ${blog.author}?`)
     ) {
       await deleteBlog(blog.id)
+      messageDispatch({ type: 'SUCCESS', payload: 'blog deleted successfully' })
+      setTimeout(() => {
+        messageDispatch({})
+      }, 5000)
     }
   }
 

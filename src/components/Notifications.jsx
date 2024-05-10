@@ -6,9 +6,9 @@ import { createContext, useReducer } from 'react'
 const notificationReducer = (state, action) => {
   switch (action.type) {
     case 'SUCCESS':
-      return action.payload
+      return { ...action }
     case 'ERROR':
-      return action.payload
+      return { ...action }
     default:
       return ''
   }
@@ -18,12 +18,11 @@ const NotificationContext = createContext()
 
 export const NotificationContextProvider = (props) => {
   const [message, messageDispatch] = useReducer(notificationReducer, '')
-  console.log(message)
-  const isSuccessful = message === 'Blog added!' ? 'success' : 'error'
+  const isSuccessful = message.type === 'SUCCESS' ? 'success' : 'error'
 
   return (
     <NotificationContext.Provider value={[message, messageDispatch]}>
-      {message && <div className={isSuccessful}>{message}</div>}
+      {message.type && <div className={isSuccessful}>{message.payload}</div>}
       {props.children}
     </NotificationContext.Provider>
   )

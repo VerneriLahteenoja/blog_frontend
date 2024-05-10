@@ -3,7 +3,7 @@ import loginService from '../services/login'
 import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const LoginForm = ({ setUser, setMessage, setSuccess }) => {
+const LoginForm = ({ setUser }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -11,22 +11,15 @@ const LoginForm = ({ setUser, setMessage, setSuccess }) => {
     event.preventDefault()
     try {
       const user = await loginService.login({
-        username, password
+        username,
+        password,
       })
       setUser(user)
-      window.localStorage.setItem(
-        'loggedInUser', JSON.stringify(user)
-      )
+      window.localStorage.setItem('loggedInUser', JSON.stringify(user))
       blogService.setToken(user.token)
     } catch (exception) {
       console.log(exception)
-      setMessage('Wrong username or password')
-      setSuccess(false)
     }
-    setTimeout(() => {
-      setMessage(null)
-      setSuccess(null)
-    }, 5000)
     setUsername('')
     setPassword('')
   }
@@ -35,22 +28,24 @@ const LoginForm = ({ setUser, setMessage, setSuccess }) => {
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div>
-					username
+          username
           <input
-            data-testid='username'
+            data-testid="username"
             type="text"
             value={username}
             name="Username"
-            onChange={({ target }) => setUsername(target.value)} />
+            onChange={({ target }) => setUsername(target.value)}
+          />
         </div>
         <div>
-					password
+          password
           <input
-            data-testid='password'
+            data-testid="password"
             type="text"
             value={password}
             name="Password"
-            onChange={({ target }) => setPassword(target.value)} />
+            onChange={({ target }) => setPassword(target.value)}
+          />
         </div>
         <div>
           <button type="submit">login</button>
@@ -62,8 +57,6 @@ const LoginForm = ({ setUser, setMessage, setSuccess }) => {
 
 LoginForm.propTypes = {
   setUser: PropTypes.func.isRequired,
-  setMessage: PropTypes.func.isRequired,
-  setSuccess: PropTypes.func.isRequired
 }
 
 export default LoginForm

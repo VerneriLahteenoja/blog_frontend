@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
+import NotificationContext from './Notifications'
 
-
-const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
+const BlogForm = ({ addBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [message, messageDispatch] = useContext(NotificationContext)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -13,14 +14,21 @@ const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
       await addBlog({
         title: title,
         author: author,
-        url: url
+        url: url,
       })
-      setMessage(`a new blog ${title} by ${author} added`)
-      setSuccess(true)
+      messageDispatch({ type: 'SUCCESS', payload: 'Blog added!' })
+      setTimeout(() => {
+        messageDispatch({})
+      }, 5000)
     } catch (exception) {
       console.log(exception)
-      setMessage('Error! Adding blog failed')
-      setSuccess(false)
+      messageDispatch({
+        type: 'ERROR',
+        payload: 'Error, make sure no fields are empty.',
+      })
+      setTimeout(() => {
+        messageDispatch({})
+      }, 5000)
     }
     setTitle('')
     setAuthor('')
@@ -33,7 +41,7 @@ const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
         <div>
           <label htmlFor="Title">title:</label>
           <input
-            data-testid='title'
+            data-testid="title"
             id="Title"
             type="text"
             value={title}
@@ -44,7 +52,7 @@ const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
         <div>
           <label htmlFor="Author">author:</label>
           <input
-            data-testid='author'
+            data-testid="author"
             id="Author"
             type="text"
             value={author}
@@ -55,7 +63,7 @@ const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
         <div>
           <label htmlFor="Url">url:</label>
           <input
-            data-testid='url'
+            data-testid="url"
             id="Url"
             type="text"
             value={url}
@@ -71,8 +79,6 @@ const BlogForm = ({ addBlog, setMessage, setSuccess }) => {
 
 BlogForm.propTypes = {
   addBlog: PropTypes.func.isRequired,
-  setMessage: PropTypes.func.isRequired,
-  setSuccess: PropTypes.func.isRequired
 }
 
 export default BlogForm
