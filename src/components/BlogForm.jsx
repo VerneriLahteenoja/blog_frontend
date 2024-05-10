@@ -1,38 +1,40 @@
 import { useContext, useState } from 'react'
-import PropTypes from 'prop-types'
 import NotificationContext from './Notifications'
+import blogService from '../services/blogs'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-const BlogForm = ({ addBlog }) => {
+const BlogForm = ({ blogFormRef }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-  const [message, messageDispatch] = useContext(NotificationContext)
+  const [message, dispatch] = useContext(NotificationContext)
+
+  const queryClient = useQueryClient()
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+      dispatch({ type: 'SUCCESS', payload: 'Blog added!' })
+      setTimeout(() => {
+        dispatch({})
+      }, 5000)
+    },
+    onError: () => {
+      dispatch({ type: 'ERROR', payload: 'ERROR: Failed to add blog' })
+      setTimeout(() => {
+        dispatch({})
+      }, 5000)
+    },
+  })
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    try {
-      await addBlog({
-        title: title,
-        author: author,
-        url: url,
-      })
-      messageDispatch({ type: 'SUCCESS', payload: 'Blog added!' })
-      setTimeout(() => {
-        messageDispatch({})
-      }, 5000)
-    } catch (exception) {
-      console.log(exception)
-      messageDispatch({
-        type: 'ERROR',
-        payload: 'Error, make sure no fields are empty.',
-      })
-      setTimeout(() => {
-        messageDispatch({})
-      }, 5000)
-    }
+    blogFormRef.current.toggleVisibility()
+    newBlogMutation.mutate({ title, author, url })
     setTitle('')
     setAuthor('')
     setUrl('')
+    blogFormRef.current.toggleVisibility()
   }
   return (
     <div>
@@ -75,10 +77,6 @@ const BlogForm = ({ addBlog }) => {
       </form>
     </div>
   )
-}
-
-BlogForm.propTypes = {
-  addBlog: PropTypes.func.isRequired,
 }
 
 export default BlogForm
