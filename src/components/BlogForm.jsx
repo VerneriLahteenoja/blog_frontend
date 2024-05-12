@@ -7,22 +7,22 @@ const BlogForm = ({ blogFormRef }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-  const [message, dispatch] = useContext(NotificationContext)
+  const [message, msgDispatch] = useContext(NotificationContext)
 
   const queryClient = useQueryClient()
   const newBlogMutation = useMutation({
     mutationFn: blogService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
-      dispatch({ type: 'SUCCESS', payload: 'Blog added!' })
+      msgDispatch({ type: 'SUCCESS', payload: 'Blog added!' })
       setTimeout(() => {
-        dispatch({})
+        msgDispatch({})
       }, 5000)
     },
     onError: () => {
-      dispatch({ type: 'ERROR', payload: 'ERROR: Failed to add blog' })
+      msgDispatch({ type: 'ERROR', payload: 'ERROR: Failed to add blog' })
       setTimeout(() => {
-        dispatch({})
+        msgDispatch({})
       }, 5000)
     },
   })
