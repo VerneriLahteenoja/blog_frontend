@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const Blog = ({ blog, username }) => {
   const [visible, setVisible] = useState(false)
-  const [message, dispatch] = useContext(NotificationContext)
+  const [message, msgDispatch] = useContext(NotificationContext)
 
   const blogStyle = {
     paddingTop: 10,
@@ -22,15 +22,15 @@ const Blog = ({ blog, username }) => {
     mutationFn: blogService.update,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
-      dispatch({ type: 'SUCCESS', payload: 'Voted!' })
+      msgDispatch({ type: 'SUCCESS', payload: 'Voted!' })
       setTimeout(() => {
-        dispatch({})
+        msgDispatch({})
       }, 5000)
     },
     onError: () => {
-      dispatch({ type: 'ERROR', payload: 'ERROR: Voting failed' })
+      msgDispatch({ type: 'ERROR', payload: 'ERROR: Voting failed' })
       setTimeout(() => {
-        dispatch({})
+        msgDispatch({})
       }, 5000)
     },
   })
@@ -39,18 +39,18 @@ const Blog = ({ blog, username }) => {
     mutationFn: blogService.deleteOne,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
-      dispatch({ type: 'SUCCESS', payload: 'Blog deleted' })
+      msgDispatch({ type: 'SUCCESS', payload: 'Blog deleted' })
       setTimeout(() => {
-        dispatch({})
+        msgDispatch({})
       }, 5000)
     },
     onError: () => {
-      dispatch({
+      msgDispatch({
         type: 'ERROR',
         payload: 'ERROR: Only blog creator can delete this blog',
       })
       setTimeout(() => {
-        dispatch({})
+        msgDispatch({})
       }, 5000)
     },
   })
