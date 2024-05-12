@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef, useContext } from 'react'
+import { useEffect, useRef, useContext } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import Togglable from './components/Togglable'
 import { useQuery } from '@tanstack/react-query'
+import UserContext from './components/UserReducer'
 
 const App = () => {
-  const [user, setUser] = useState(null)
+  const [user, userDispatch] = useContext(UserContext)
 
   const blogFormRef = useRef()
 
@@ -23,13 +24,13 @@ const App = () => {
     const logged = window.localStorage.getItem('loggedInUser')
     const user = JSON.parse(logged)
     if (logged) {
-      setUser(user)
       blogService.setToken(user.token)
+      userDispatch({ type: 'LOGIN', payload: logged })
     }
   }, [blogs])
 
   const handleLogout = () => {
-    setUser(null)
+    userDispatch({ type: 'LOGOUT' })
     window.localStorage.removeItem('loggedInUser')
   }
 
@@ -45,7 +46,7 @@ const App = () => {
       <h1>Blogs</h1>
       {!user && (
         <Togglable buttonLabel="Log in">
-          <LoginForm setUser={setUser} />
+          <LoginForm />
         </Togglable>
       )}
       {user && (
@@ -62,7 +63,7 @@ const App = () => {
           {blogs
             .sort((a, b) => a.likes - b.likes)
             .map((blog) => (
-              <Blog key={blog.id} blog={blog} username={user.username} />
+              <Blog key={blog.id} blog={blog} username={blog.user.username} />
             ))}
         </div>
       )}

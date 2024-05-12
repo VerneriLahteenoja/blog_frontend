@@ -1,22 +1,24 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import loginService from '../services/login'
 import blogService from '../services/blogs'
-import PropTypes from 'prop-types'
+import UserContext from './UserReducer'
 
-const LoginForm = ({ setUser }) => {
+const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [user, userDispatch] = useContext(UserContext)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({
+      const loginUser = await loginService.login({
         username,
         password,
       })
-      setUser(user)
-      window.localStorage.setItem('loggedInUser', JSON.stringify(user))
-      blogService.setToken(user.token)
+      window.localStorage.setItem('loggedInUser', JSON.stringify(loginUser))
+      blogService.setToken(loginUser.token)
+      userDispatch({ type: 'LOGIN', payload: loginUser })
+      console.log(loginUser)
     } catch (exception) {
       console.log(exception)
     }
@@ -53,10 +55,6 @@ const LoginForm = ({ setUser }) => {
       </form>
     </div>
   )
-}
-
-LoginForm.propTypes = {
-  setUser: PropTypes.func.isRequired,
 }
 
 export default LoginForm
