@@ -21,19 +21,13 @@ const App = () => {
 
   const blogFormRef = useRef()
 
-  const blogsResult = useQuery({
+  const result = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
     retry: 1,
   })
 
-  const usersResult = useQuery({
-    queryKey: ['users'],
-    queryFn: usersService.getAll,
-    retry: 1,
-  })
-  const users = usersResult.data
-  const blogs = blogsResult.data
+  const blogs = result.data
 
   useEffect(() => {
     const logged = window.localStorage.getItem('loggedInUser')
@@ -51,9 +45,9 @@ const App = () => {
 
   // This needs to be after hooks following rules of hooks
 
-  if (blogsResult.isLoading) {
+  if (result.isLoading) {
     return <div>loading resources...</div>
-  } else if (blogsResult.isError) {
+  } else if (result.isError) {
     return <div>service not available due to problems in server</div>
   }
 
@@ -96,7 +90,7 @@ const App = () => {
             )
           }
         />
-        <Route path="/users/" element={<Users users={users} />} />
+        <Route path="/users/" element={<Users />} />
       </Routes>
     </div>
   )
