@@ -1,14 +1,20 @@
+// Lib imports
 import { useEffect, useRef, useContext } from 'react'
+import { Routes, Route, useMatch } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+
+// Components
+import Togglable from './components/Togglable'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
-import blogService from './services/blogs'
-import Togglable from './components/Togglable'
-import { useQuery } from '@tanstack/react-query'
-import UserContext from './components/UserReducer'
-import { Routes, Route } from 'react-router-dom'
 import Users from './components/Users'
+import UserContext from './components/UserReducer'
+
+// Services
+import blogService from './services/blogs'
 import usersService from './services/users'
+import User from './components/User'
 
 const App = () => {
   const [user, userDispatch] = useContext(UserContext)
@@ -31,9 +37,9 @@ const App = () => {
 
   useEffect(() => {
     const logged = window.localStorage.getItem('loggedInUser')
-    const user = JSON.parse(logged)
+    const loggedUser = JSON.parse(logged)
     if (logged) {
-      blogService.setToken(user.token)
+      blogService.setToken(loggedUser.token)
       userDispatch({ type: 'LOGIN', payload: logged })
     }
   }, [blogs])
