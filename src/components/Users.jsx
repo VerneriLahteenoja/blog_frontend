@@ -1,20 +1,11 @@
-import usersService from '../services/users'
-import { useQuery } from '@tanstack/react-query'
+import { useContext } from 'react'
+import UsersContext from './UsersReducer'
 
 const Users = () => {
-  const result = useQuery({
-    queryKey: ['users'],
-    queryFn: usersService.getAll,
-    retry: 1,
-  })
-
-  const users = result.data
-
-  if (result.isLoading) {
+  const [users, usersDispatch] = useContext(UsersContext)
+  console.log(users)
+  if (!users) {
     return <div>loading users...</div>
-  }
-  if (result.isError) {
-    return <div>cannot load users</div>
   }
 
   return (

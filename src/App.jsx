@@ -14,10 +14,11 @@ import UserContext from './components/UserReducer'
 // Services
 import blogService from './services/blogs'
 import usersService from './services/users'
-import User from './components/User'
+import UsersContext from './components/UsersReducer'
 
 const App = () => {
   const [user, userDispatch] = useContext(UserContext)
+  const [users, usersDispatch] = useContext(UsersContext)
 
   const blogFormRef = useRef()
 
@@ -27,7 +28,11 @@ const App = () => {
     retry: 1,
   })
 
-  const blogs = result.data
+  const usersResult = useQuery({
+    queryKey: ['users'],
+    queryFn: usersService.getAll,
+    retry: 1,
+  })
 
   useEffect(() => {
     const logged = window.localStorage.getItem('loggedInUser')
@@ -36,7 +41,11 @@ const App = () => {
       blogService.setToken(loggedUser.token)
       userDispatch({ type: 'LOGIN', payload: logged })
     }
-  }, [blogs])
+  }, [])
+
+  useEffect(() => {
+    usersDispatch({ type: 'SET_USERS', payload: usersResult.data })
+  }, [usersResult])
 
   const handleLogout = () => {
     userDispatch({ type: 'LOGOUT' })
@@ -45,11 +54,13 @@ const App = () => {
 
   // This needs to be after hooks following rules of hooks
 
-  if (result.isLoading) {
+  if (result.isLoading || usersResult.isLoading) {
     return <div>loading resources...</div>
-  } else if (result.isError) {
+  } else if (result.isError || usersResult.isError) {
     return <div>service not available due to problems in server</div>
   }
+
+  const blogs = result.data
 
   return (
     <div>
