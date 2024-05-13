@@ -8,19 +8,26 @@ import { useQuery } from '@tanstack/react-query'
 import UserContext from './components/UserReducer'
 import { Routes, Route } from 'react-router-dom'
 import Users from './components/Users'
+import usersService from './services/users'
 
 const App = () => {
   const [user, userDispatch] = useContext(UserContext)
 
   const blogFormRef = useRef()
 
-  const result = useQuery({
+  const blogsResult = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
     retry: 1,
   })
 
-  const blogs = result.data
+  const usersResult = useQuery({
+    queryKey: ['users'],
+    queryFn: usersService.getAll,
+    retry: 1,
+  })
+  const users = usersResult.data
+  const blogs = blogsResult.data
 
   useEffect(() => {
     const logged = window.localStorage.getItem('loggedInUser')
@@ -38,9 +45,9 @@ const App = () => {
 
   // This needs to be after hooks following rules of hooks
 
-  if (result.isLoading) {
+  if (blogsResult.isLoading) {
     return <div>loading resources...</div>
-  } else if (result.isError) {
+  } else if (blogsResult.isError) {
     return <div>service not available due to problems in server</div>
   }
 
@@ -83,7 +90,7 @@ const App = () => {
             )
           }
         />
-        <Route path="/users/" element={<Users />} />
+        <Route path="/users/" element={<Users users={users} />} />
       </Routes>
     </div>
   )
