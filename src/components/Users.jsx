@@ -1,13 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
-
 const Users = ({ users }) => {
-  // if (result.isLoading) {
-  //   return <div>loading users...</div>
-  // }
-  // if (result.isError) {
-  //   return <div>cannot load users</div>
-  // }
-
   return (
     <div>
       <h1>Users</h1>
