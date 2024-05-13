@@ -9,29 +9,39 @@ const Users = () => {
   })
 
   const users = result.data
-  console.log(users)
+
   if (result.isLoading) {
     return <div>loading users...</div>
   }
   if (result.isError) {
     return <div>cannot load users</div>
   }
-  //TODO: Create a table to display users and created blog amounts per user
+
   return (
     <div>
       <h1>Users</h1>
-      <div>
-        {users.map(
-          (u) => (
-            console.log(u),
-            (
-              <div key={u.id}>
-                {u.name} {u.blogs.length}
-              </div>
+      <table>
+        <tbody>
+          <tr>
+            <th></th>
+            <th>
+              <b>blogs created</b>
+            </th>
+          </tr>
+
+          {users.map(
+            (u) => (
+              console.log(u),
+              (
+                <tr key={u.id}>
+                  <td>{u.name}</td>
+                  <td>{u.blogs.length}</td>
+                </tr>
+              )
             )
-          )
-        )}
-      </div>
+          )}
+        </tbody>
+      </table>
     </div>
   )
 }
