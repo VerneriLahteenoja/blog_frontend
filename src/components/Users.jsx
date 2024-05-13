@@ -3,7 +3,6 @@ import UsersContext from './UsersReducer'
 
 const Users = () => {
   const [users, usersDispatch] = useContext(UsersContext)
-  console.log(users)
   if (!users) {
     return <div>loading users...</div>
   }
@@ -20,17 +19,14 @@ const Users = () => {
             </th>
           </tr>
 
-          {users.map(
-            (u) => (
-              console.log(u),
-              (
-                <tr key={u.id}>
-                  <td>{u.name}</td>
-                  <td>{u.blogs.length}</td>
-                </tr>
-              )
-            )
-          )}
+          {users.map((u) => (
+            <tr key={u.id}>
+              <td>
+                <a href={`users/${u.id}`}>{u.name}</a>
+              </td>
+              <td>{u.blogs.length}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

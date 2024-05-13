@@ -9,6 +9,7 @@ import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Users from './components/Users'
+import User from './components/User'
 import UserContext from './components/UserReducer'
 
 // Services
@@ -52,6 +53,8 @@ const App = () => {
     window.localStorage.removeItem('loggedInUser')
   }
 
+  const match = useMatch('/users/:id')
+
   // This needs to be after hooks following rules of hooks
 
   if (result.isLoading || usersResult.isLoading) {
@@ -59,6 +62,15 @@ const App = () => {
   } else if (result.isError || usersResult.isError) {
     return <div>service not available due to problems in server</div>
   }
+  if (!users) {
+    return <div>loading users...</div>
+  }
+
+  const userById = (id) => {
+    return users.find((u) => u.id === id)
+  }
+
+  const matchedUser = match ? userById(match.params.id) : null
 
   const blogs = result.data
 
@@ -102,6 +114,7 @@ const App = () => {
           }
         />
         <Route path="/users/" element={<Users />} />
+        <Route path="/users/:id" element={<User user={matchedUser} />} />
       </Routes>
     </div>
   )
