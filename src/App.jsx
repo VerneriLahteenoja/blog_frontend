@@ -8,6 +8,7 @@ import Togglable from './components/Togglable'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import BlogList from './components/BlogList'
 import Users from './components/Users'
 import User from './components/User'
 import UserContext from './components/UserReducer'
@@ -67,15 +68,18 @@ const App = () => {
     return <div>loading users...</div>
   }
 
-  const userById = (id) => {
-    return users.find((u) => u.id === id)
+  const resourceById = (id, resource) => {
+    return resource.find((u) => u.id === id)
   }
-
-  const matchedUser = userMatch ? userById(userMatch.params.id) : null
 
   const blogs = result.data
 
-  //console.log(user)
+  const matchedUser = userMatch
+    ? resourceById(userMatch.params.id, users)
+    : null
+  const matchedBlog = blogMatch
+    ? resourceById(blogMatch.params.id, blogs)
+    : null
 
   return (
     <div>
@@ -86,12 +90,16 @@ const App = () => {
         </Togglable>
       )}
       {user && (
-        <p>
+        <div>
           {user.name} logged in
-          <button type="button" onClick={handleLogout}>
-            logout
-          </button>
-        </p>
+          <br />
+          <br />
+          <div>
+            <button type="button" onClick={handleLogout}>
+              logout
+            </button>
+          </div>
+        </div>
       )}
 
       <Routes>
@@ -103,17 +111,17 @@ const App = () => {
                 <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
                   <BlogForm blogFormRef={blogFormRef} />
                 </Togglable>
-                {blogs
-                  .sort((a, b) => a.likes - b.likes)
-                  .map((blog) => (
-                    <Blog key={blog.id} blog={blog} username={user.username} />
-                  ))}
+                <BlogList blogs={blogs} />
               </div>
             )
           }
         />
         <Route path="/users/" element={<Users />} />
         <Route path="/users/:id" element={<User user={matchedUser} />} />
+        <Route
+          path="/blogs/:id"
+          element={<Blog blog={matchedBlog} username={user.username} />}
+        />
       </Routes>
     </div>
   )

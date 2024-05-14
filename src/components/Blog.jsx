@@ -5,17 +5,7 @@ import blogService from '../services/blogs'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const Blog = ({ blog, username }) => {
-  const [visible, setVisible] = useState(false)
   const [message, msgDispatch] = useContext(NotificationContext)
-  console.log(username)
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
 
   const queryClient = useQueryClient()
 
@@ -69,31 +59,29 @@ const Blog = ({ blog, username }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div>
       <div>
-        {blog.title} by {blog.author}{' '}
-        <button type="button" onClick={() => setVisible(!visible)}>
-          {visible ? 'Hide' : 'View'}
-        </button>
+        <h1>
+          {blog.title} by {blog.author}
+        </h1>
       </div>
-      {visible && (
-        <div>
-          {blog.url}
-          <div data-testid="likes">
-            likes {blog.likes}{' '}
-            <button type="button" onClick={handleLike}>
-              like
-            </button>
-          </div>
-          <div>{blog.user.name}</div>
 
-          {username === blog.user.username && (
-            <button type="button" onClick={handleDelete}>
-              remove
-            </button>
-          )}
+      <div>
+        {blog.url}
+        <div data-testid="likes">
+          {blog.likes} likes{' '}
+          <button type="button" onClick={handleLike}>
+            like
+          </button>
         </div>
-      )}
+        <div>added by {blog.user.name}</div>
+
+        {username === blog.user.username && (
+          <button type="button" onClick={handleDelete}>
+            remove
+          </button>
+        )}
+      </div>
     </div>
   )
 }
