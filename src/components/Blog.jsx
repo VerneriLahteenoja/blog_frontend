@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 const Blog = ({ blog, username }) => {
   const [visible, setVisible] = useState(false)
   const [message, msgDispatch] = useContext(NotificationContext)
+  console.log(username)
 
   const blogStyle = {
     paddingTop: 10,

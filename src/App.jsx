@@ -40,7 +40,7 @@ const App = () => {
     const loggedUser = JSON.parse(logged)
     if (logged) {
       blogService.setToken(loggedUser.token)
-      userDispatch({ type: 'LOGIN', payload: logged })
+      userDispatch({ type: 'LOGIN', payload: loggedUser })
     }
   }, [])
 
@@ -53,7 +53,8 @@ const App = () => {
     window.localStorage.removeItem('loggedInUser')
   }
 
-  const match = useMatch('/users/:id')
+  const userMatch = useMatch('/users/:id')
+  const blogMatch = useMatch('/blogs/:id')
 
   // This needs to be after hooks following rules of hooks
 
@@ -70,9 +71,11 @@ const App = () => {
     return users.find((u) => u.id === id)
   }
 
-  const matchedUser = match ? userById(match.params.id) : null
+  const matchedUser = userMatch ? userById(userMatch.params.id) : null
 
   const blogs = result.data
+
+  //console.log(user)
 
   return (
     <div>
@@ -103,11 +106,7 @@ const App = () => {
                 {blogs
                   .sort((a, b) => a.likes - b.likes)
                   .map((blog) => (
-                    <Blog
-                      key={blog.id}
-                      blog={blog}
-                      username={blog.user.username}
-                    />
+                    <Blog key={blog.id} blog={blog} username={user.username} />
                   ))}
               </div>
             )
