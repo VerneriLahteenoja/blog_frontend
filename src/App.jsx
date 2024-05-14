@@ -17,6 +17,7 @@ import UserContext from './components/UserReducer'
 import blogService from './services/blogs'
 import usersService from './services/users'
 import UsersContext from './components/UsersReducer'
+import NavMenu from './components/NavMenu'
 
 const App = () => {
   const [user, userDispatch] = useContext(UserContext)
@@ -49,10 +50,10 @@ const App = () => {
     usersDispatch({ type: 'SET_USERS', payload: usersResult.data })
   }, [usersResult])
 
-  const handleLogout = () => {
-    userDispatch({ type: 'LOGOUT' })
-    window.localStorage.removeItem('loggedInUser')
-  }
+  // const handleLogout = () => {
+  //   userDispatch({ type: 'LOGOUT' })
+  //   window.localStorage.removeItem('loggedInUser')
+  // }
 
   const userMatch = useMatch('/users/:id')
   const blogMatch = useMatch('/blogs/:id')
@@ -84,24 +85,12 @@ const App = () => {
   return (
     <div>
       <h1>Blogs</h1>
+      <NavMenu user={user ? user : null} />
       {!user && (
         <Togglable buttonLabel="Log in">
           <LoginForm />
         </Togglable>
       )}
-      {user && (
-        <div>
-          {user.name} logged in
-          <br />
-          <br />
-          <div>
-            <button type="button" onClick={handleLogout}>
-              logout
-            </button>
-          </div>
-        </div>
-      )}
-
       <Routes>
         <Route
           path="/"
@@ -120,7 +109,9 @@ const App = () => {
         <Route path="/users/:id" element={<User user={matchedUser} />} />
         <Route
           path="/blogs/:id"
-          element={<Blog blog={matchedBlog} username={user.username} />}
+          element={
+            <Blog blog={matchedBlog} username={user ? user.username : null} />
+          }
         />
       </Routes>
     </div>
