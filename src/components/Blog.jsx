@@ -1,5 +1,4 @@
-import { useContext, useState } from 'react'
-import PropTypes from 'prop-types'
+import { useContext } from 'react'
 import NotificationContext from './Notifications'
 import blogService from '../services/blogs'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -76,19 +75,16 @@ const Blog = ({ blog, username }) => {
         </div>
         <div>added by {blog.user.name}</div>
 
-        {username === blog.user.username && (
-          <button type="button" onClick={handleDelete}>
-            remove
-          </button>
-        )}
+        {username
+          ? username === blog.user.username && (
+              <button type="button" onClick={handleDelete}>
+                remove
+              </button>
+            )
+          : null}
       </div>
     </div>
   )
-}
-
-Blog.propTypes = {
-  blog: PropTypes.object,
-  username: PropTypes.string.isRequired,
 }
 
 export default Blog
