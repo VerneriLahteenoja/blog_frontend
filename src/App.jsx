@@ -93,7 +93,7 @@ const App = () => {
     : null
 
   return (
-    <div>
+    <div className="container">
       <h1>Blogs</h1>
       <NavMenu user={user ? user : null} />
       {!user && (

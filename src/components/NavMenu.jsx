@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Button } from 'react-bootstrap'
 import UserContext from './UserReducer'
 
 const NavMenu = () => {
@@ -10,6 +11,9 @@ const NavMenu = () => {
     paddingBottom: 5,
     backgroundColor: 'gray',
     marginBottom: 10,
+    border: 'solid',
+    borderWidth: 1,
+    color: 'white',
   }
   const padding = {
     paddingRight: 5,
@@ -24,17 +28,17 @@ const NavMenu = () => {
   return (
     <div style={navStyle}>
       <Link style={padding} to="/">
-        blogs
+        Blogs
       </Link>
       <Link style={padding} to="/users">
-        users
+        Users
       </Link>
       {user && (
         <>
           {user.name} logged in
-          <button type="button" onClick={handleLogout}>
+          <Button variant="warning" type="button" onClick={handleLogout}>
             logout
-          </button>
+          </Button>
         </>
       )}
     </div>
