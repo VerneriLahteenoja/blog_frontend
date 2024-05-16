@@ -12,12 +12,13 @@ import BlogList from './components/BlogList'
 import Users from './components/Users'
 import User from './components/User'
 import UserContext from './components/UserReducer'
+import NavMenu from './components/NavMenu'
+import UsersContext from './components/UsersReducer'
 
 // Services
 import blogService from './services/blogs'
 import usersService from './services/users'
-import UsersContext from './components/UsersReducer'
-import NavMenu from './components/NavMenu'
+import commentsService from './services/comments'
 
 const App = () => {
   const [user, userDispatch] = useContext(UserContext)
@@ -37,6 +38,12 @@ const App = () => {
     retry: 1,
   })
 
+  const commentsResult = useQuery({
+    queryKey: ['comments'],
+    queryFn: commentsService.getAll,
+    retry: 1,
+  })
+
   useEffect(() => {
     const logged = window.localStorage.getItem('loggedInUser')
     const loggedUser = JSON.parse(logged)
@@ -50,19 +57,14 @@ const App = () => {
     usersDispatch({ type: 'SET_USERS', payload: usersResult.data })
   }, [usersResult])
 
-  // const handleLogout = () => {
-  //   userDispatch({ type: 'LOGOUT' })
-  //   window.localStorage.removeItem('loggedInUser')
-  // }
-
   const userMatch = useMatch('/users/:id')
   const blogMatch = useMatch('/blogs/:id')
 
   // This needs to be after hooks following rules of hooks
 
-  if (result.isLoading || usersResult.isLoading) {
+  if (result.isLoading || usersResult.isLoading || commentsResult.isLoading) {
     return <div>loading resources...</div>
-  } else if (result.isError || usersResult.isError) {
+  } else if (result.isError || usersResult.isError || commentsResult.isError) {
     return <div>service not available due to problems in server</div>
   }
   if (!users) {
@@ -73,6 +75,10 @@ const App = () => {
     return resource.find((u) => u.id === id)
   }
 
+  const commentsByBlogId = (id) => {
+    return commentsResult.data.filter((c) => c.blog.id === id) || null
+  }
+
   const blogs = result.data
 
   const matchedUser = userMatch
@@ -80,6 +86,10 @@ const App = () => {
     : null
   const matchedBlog = blogMatch
     ? resourceById(blogMatch.params.id, blogs)
+    : null
+
+  const matchedComments = blogMatch
+    ? commentsByBlogId(blogMatch.params.id)
     : null
 
   return (
@@ -110,7 +120,11 @@ const App = () => {
         <Route
           path="/blogs/:id"
           element={
-            <Blog blog={matchedBlog} username={user ? user.username : null} />
+            <Blog
+              blog={matchedBlog}
+              username={user ? user.username : null}
+              comments={matchedComments}
+            />
           }
         />
       </Routes>

@@ -3,7 +3,7 @@ import NotificationContext from './Notifications'
 import blogService from '../services/blogs'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-const Blog = ({ blog, username }) => {
+const Blog = ({ blog, username, comments }) => {
   const [message, msgDispatch] = useContext(NotificationContext)
 
   const queryClient = useQueryClient()
@@ -56,6 +56,7 @@ const Blog = ({ blog, username }) => {
       deleteBlogMutation.mutate(blog.id)
     }
   }
+  console.log(comments)
 
   return (
     <div>
@@ -82,6 +83,20 @@ const Blog = ({ blog, username }) => {
               </button>
             )
           : null}
+      </div>
+      <div>
+        <h2>comments</h2>
+        <button type="button">add comment</button>
+        <br />
+        {comments.length > 0 ? (
+          <ul>
+            {comments.map((c) => (
+              <li key={c.id}>{c.comment}</li>
+            ))}
+          </ul>
+        ) : (
+          <div>no comments yet</div>
+        )}
       </div>
     </div>
   )
