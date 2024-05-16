@@ -1,10 +1,13 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import NotificationContext from './Notifications'
 import blogService from '../services/blogs'
+import commentsService from '../services/comments'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const Blog = ({ blog, username, comments }) => {
   const [message, msgDispatch] = useContext(NotificationContext)
+  const [visible, setVisible] = useState(false)
+  const [commentInput, setCommentInput] = useState('')
 
   const queryClient = useQueryClient()
 
@@ -45,6 +48,15 @@ const Blog = ({ blog, username, comments }) => {
     },
   })
 
+  const addCommentMutation = useMutation({
+    mutationFn: (variables) =>
+      commentsService.create(variables.id, { comment: variables.content }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments'] })
+      setVisible(!visible)
+    },
+  })
+
   const handleLike = async () => {
     updateBlogMutation.mutate({ ...blog, likes: blog.likes + 1 })
   }
@@ -56,7 +68,15 @@ const Blog = ({ blog, username, comments }) => {
       deleteBlogMutation.mutate(blog.id)
     }
   }
-  console.log(comments)
+
+  const handleCommentSubmit = async (event) => {
+    event.preventDefault()
+
+    addCommentMutation.mutate({
+      id: blog.id,
+      content: commentInput,
+    })
+  }
 
   return (
     <div>
@@ -86,7 +106,22 @@ const Blog = ({ blog, username, comments }) => {
       </div>
       <div>
         <h2>comments</h2>
-        <button type="button">add comment</button>
+        {!visible ? (
+          <button type="button" onClick={() => setVisible(!visible)}>
+            add comment
+          </button>
+        ) : (
+          <form onSubmit={handleCommentSubmit}>
+            <input
+              id="Comment"
+              type="text"
+              value={commentInput}
+              onChange={({ target }) => setCommentInput(target.value)}
+            />
+            <button type="submit">comment</button>
+          </form>
+        )}
+
         <br />
         {comments.length > 0 ? (
           <ul>
